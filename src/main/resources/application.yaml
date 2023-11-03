@@ -1,0 +1,53 @@
+#spring:
+#  application:
+#    name: store-service
+#  cloud:
+#    config:
+#      username: configUser
+#      password: configPassword
+#      uri: http://${CONFIG_SERVER_HOST}:8888
+#  config:
+#    import: optional:configserver:${spring.cloud.config.uri}
+
+spring:
+  application:
+    name: store-service
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: WmwycXU0NG1AUmVkaXNQYXNzd29yZA==
+  cache:
+    type: redis
+    cache-names: redis-cache
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/store_service?currentSchema=store
+    username: store_service
+    password: cCdvZWt0NDk4W2llazJb
+  kafka:
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    bootstrap-servers: ${KAFKA_HOST}:9092
+  main:
+    banner-mode: off
+
+server:
+  port: 8093
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://discUser:discPassword@localhost:8761/eureka/
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
