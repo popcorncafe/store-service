@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+
+  store_db_postgres:
+    image: postgres:16.0-alpine3.18
+    container_name: store_db_postgres
+    environment:
+      POSTGRES_USER: store-service
+      POSTGRES_PASSWORD: storePassWord
+      POSTGRES_DB: store-service
+    ports:
+      - '5432:5432'

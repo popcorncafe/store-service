@@ -1,69 +1,64 @@
 CREATE TABLE address
 (
-    id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    city_name   varchar(20) NOT NULL,
-    street_name varchar(20) NOT NULL,
-    home_number integer     NOT NULL,
-    home_letter varchar(3)  NOT NULL
-);
-
-CREATE TABLE storage
-(
-    id uuid PRIMARY KEY DEFAULT gen_random_uuid()
+    address_id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    city_name   varchar(20) NOT NULL DEFAULT ' ',
+    street_name varchar(20) NOT NULL DEFAULT ' ',
+    home_number integer     NOT NULL DEFAULT 0,
+    home_letter varchar(3)  NOT NULL DEFAULT ' '
 );
 
 CREATE TABLE store
 (
-    id         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    storage_id uuid  NOT NULL REFERENCES storage (id) ON DELETE SET NULL,
-    address_id uuid  NOT NULL REFERENCES address (id) ON DELETE SET NULL,
+    store_id         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    address_id uuid  NOT NULL REFERENCES address (address_id) ON DELETE SET NULL,
     location   point NOT NULL   DEFAULT point(0.0, 0.0)
 );
 
 CREATE TABLE ingredient
 (
-    id         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    name       varchar(20) NOT NULL,
-    unit_price float8      NOT NULL,
-    measure    smallint    NOT NULL
+    ingredient_id         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    name       varchar(30) NOT NULL,
+    unit_price float8      NOT NULL DEFAULT 0.0,
+    measure    varchar(15)    NOT NULL DEFAULT 'GRAMS'
 );
 
 CREATE TABLE product
 (
-    id          uuid PRIMARY KEY      DEFAULT gen_random_uuid(),
+    product_id          uuid PRIMARY KEY      DEFAULT gen_random_uuid(),
     name        varchar(20)  NOT NULL,
-    description varchar(200) NULL,
-    size        smallint     NOT NULL DEFAULT 0
+    description varchar(200) NOT NULL DEFAULT ' ',
+    size        varchar(6)     NOT NULL DEFAULT 'SMALL'
 );
 
-CREATE TABLE storage_ingredient
+CREATE TABLE store_ingredient
 (
-    storage_id    uuid   NOT NULL REFERENCES storage (id) ON DELETE CASCADE,
-    ingredient_id uuid   NOT NULL REFERENCES ingredient (id) ON DELETE CASCADE,
-    amount        float4 NULL
+    store_id    uuid   NOT NULL REFERENCES store (store_id) ON DELETE CASCADE,
+    ingredient_id uuid   NOT NULL REFERENCES ingredient (ingredient_id) ON DELETE CASCADE,
+    amount        float4 NOT NULL DEFAULT 0
 );
 
 CREATE TABLE product_ingredient
 (
-    product_id    uuid   NOT NULL REFERENCES product (id) ON DELETE CASCADE,
-    ingredient_id uuid   NOT NULL REFERENCES ingredient (id) ON DELETE CASCADE,
+    product_id    uuid   NOT NULL REFERENCES product (product_id) ON DELETE CASCADE,
+    ingredient_id uuid   NOT NULL REFERENCES ingredient (ingredient_id) ON DELETE CASCADE,
     amount        float4 NULL
 );
 
 CREATE TABLE cart
 (
-    id          uuid PRIMARY KEY     DEFAULT gen_random_uuid(),
+    cart_id          uuid PRIMARY KEY     DEFAULT gen_random_uuid(),
     client_id   bigint      NOT NULL DEFAULT 0,
-    store_id    uuid        NOT NULL REFERENCES store (id),
+    store_id    uuid        NOT NULL REFERENCES store (store_id),
     order_date  timestamptz NOT NULL DEFAULT current_timestamp,
     order_price float8      NOT NULL,
-    status      smallint    NOT NULL DEFAULT 0,
-    is_paid     bool        NOT NULL,
-    products    uuid[]      NOT NULL
+    status      varchar(20)   NOT NULL DEFAULT 'CREATED'
 );
---
--- CREATE TABLE cart_products
--- (
---     cart_id    uuid NOT NULL REFERENCES cart (id) ON DELETE CASCADE,
---     product_id uuid NOT NULL REFERENCES product (id) ON DELETE CASCADE
--- );
+
+
+CREATE INDEX idx_cart_client_id ON cart (client_id);
+
+CREATE TABLE cart_products
+(
+    cart_id    uuid NOT NULL REFERENCES cart (cart_id) ON DELETE CASCADE,
+    product_id uuid NOT NULL REFERENCES product (product_id) ON DELETE CASCADE
+);
