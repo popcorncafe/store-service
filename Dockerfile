@@ -13,8 +13,6 @@ VOLUME /tmp
 ARG EXTRACTED=/extracted-jar
 ARG APPLICATION_USER=spring-app
 
-
-COPY jdk .
 ENV JAVA_HOME=/jdk
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
@@ -26,7 +24,7 @@ USER 1000
 
 WORKDIR /app
 
-#COPY jdk $JAVA_HOME
+COPY jdk $JAVA_HOME
 COPY $EXTRACTED/dependencies/ ./
 COPY $EXTRACTED/spring-boot-loader/ ./
 COPY $EXTRACTED/application/ ./
