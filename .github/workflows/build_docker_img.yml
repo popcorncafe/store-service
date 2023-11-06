@@ -28,35 +28,33 @@ jobs:
       run: cp -R target/store-service**.jar application.jar
     
     - name: Extract JAR
-      run: java -Djarmode=layertools -jar application.jar extract --destination extracted-jar
+      run: java -Djarmode=layertools -jar application.jar extract --destination app/extracted-jar
 
     - name: Create JRE
-      run: jlink --add-modules $(jdeps --ignore-missing-deps -q -recursive --multi-release 21 --print-module-deps -cp 'extracted-jar/dependencies/BOOT-INF/lib/*' application.jar) --strip-java-debug-attributes --no-man-pages --no-header-files --compress=2  --output jdk
+      run: jlink --add-modules $(jdeps --ignore-missing-deps -q -recursive --multi-release 21 --print-module-deps -cp 'app/extracted-jar/dependencies/BOOT-INF/lib/*' application.jar) --strip-java-debug-attributes --no-man-pages --no-header-files --compress=2  --output app/jdk
 
-    - run: tree -L 2
+    - name: Copy Dockerfile
+      run: mv Dockerfile ./app/
 
-  #     - name: Uploading build artifacts
-  #       uses: actions/upload-artifact@v3.1.3
-  #       with:
-  #         name: ${{ inputs.service }}-artifact
-  #         path: ./${{ inputs.service }}/target/**.jar
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3.1.3
+      with: 
+        name: artifacts
+        path: ./app/
 
-  #     - name: Uploading Dockerfile
-  #       uses: actions/upload-artifact@v3.1.3
-  #       with:
-  #         name: ${{ inputs.service }}-dockerfile
-  #         path: ./${{ 
-  # build_and_push_images:
+  build_docker_img:
+    runs-on: ubuntu-latest
+    needs: [build_jar]
 
-  #   runs-on: ubuntu-latest
-  #   needs: [ build_jar ]
+    steps:
+    - name: Load artifacts
+      uses: actions/download-artifact@v3.0.2
+      with:
+        name: artifacts
 
-  #   steps:
-  #     - name: Loading Build Artifact
-  #       uses: actions/download-artifact@v3.0.2
-  #       with:
-  #         name: ${{ inputs.service }}-artifact
+    - run: tree -L 3
 
+    
   #     - name: Loading Dockerfile
   #       uses: actions/download-artifact@v3.0.2
   #       with:
