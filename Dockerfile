@@ -4,7 +4,6 @@ VOLUME /tmp
 
 ARG APPLICATION_USER=spring-app
 
-#COPY jdk ./jdk
 ENV JAVA_HOME=/jdk
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
