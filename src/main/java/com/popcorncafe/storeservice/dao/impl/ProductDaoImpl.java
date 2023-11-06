@@ -40,4 +40,9 @@ public class ProductDaoImpl implements ProductDao {
     public Optional<Product> findByStoreId(UUID id) {
         return Optional.empty();
     }
+
+    @Override
+    public List<Product> findByCartId(UUID id) {
+        return null;
+    }
 }

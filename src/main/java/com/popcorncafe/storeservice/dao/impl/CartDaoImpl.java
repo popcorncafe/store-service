@@ -1,10 +1,7 @@
 package com.popcorncafe.storeservice.dao.impl;
 
 import com.popcorncafe.storeservice.dao.CartDao;
-import com.popcorncafe.storeservice.dao.ProductDao;
 import com.popcorncafe.storeservice.dao.model.Cart;
-import com.popcorncafe.storeservice.dao.model.Product;
-import com.popcorncafe.storeservice.dao.rowmapper.AddressMapper;
 import com.popcorncafe.storeservice.dao.rowmapper.CartMapper;
 import com.popcorncafe.storeservice.dto.Page;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -15,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Repository
 public class CartDaoImpl implements CartDao {
@@ -34,9 +30,7 @@ public class CartDaoImpl implements CartDao {
                 WHERE cart_id=:cart_id
                 LIMIT 1;
                 """;
-        return parameterJdbcTemplate.query(sql, Map.of("cart_id", id), new CartMapper())
-                .stream()
-                .findFirst();
+        return parameterJdbcTemplate.query(sql, Map.of("cart_id", id), new CartMapper()).stream().findFirst();
     }
 
     @Override
@@ -47,9 +41,7 @@ public class CartDaoImpl implements CartDao {
                 LIMIT :page_size
                 OFFSET :page_offset;
                 """;
-        var params = new MapSqlParameterSource()
-                .addValue("page_size", page.size())
-                .addValue("page_offset", page.offset());
+        var params = new MapSqlParameterSource().addValue("page_size", page.size()).addValue("page_offset", page.offset());
         return parameterJdbcTemplate.query(sql, params, new CartMapper());
     }
 

@@ -18,6 +18,8 @@ app:
         max-lifetime: 90000
 
 
+server:
+  port: 8093
 
 
 #  data:
@@ -43,8 +45,6 @@ app:
 #    bootstrap-servers: ${KAFKA_HOST}:9092
 #
 
-server:
-  port: 8093
 
 
 

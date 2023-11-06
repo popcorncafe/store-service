@@ -6,7 +6,7 @@ ARG RELEASE=21
 
 COPY *.jar ./application.jar
 
-RUN mkdir extracted && java -Djarmode=layertools -jar application.jar extract --destination extracted
+RUN java -Djarmode=layertools -jar application.jar extract --destination extracted
 
 RUN jdeps  \
     --ignore-missing-deps -q -recursive  \
