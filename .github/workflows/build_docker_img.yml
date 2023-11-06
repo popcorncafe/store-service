@@ -20,8 +20,7 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
         cache: maven
-    - run: tree -L 2
-    
+        
     - name: Build with Maven Wrapper
       run: ./mvnw -B package -DskipTests
 
@@ -29,8 +28,11 @@ jobs:
       run: cp -R target/store-service**.jar application.jar
     
     - name: Extract JAR
-      run: java -Djarmode=layertools -jar application.jar extract --destination extracted
-      
+      run: java -Djarmode=layertools -jar application.jar extract --destination extracted-jar
+
+    - name: Create JRE
+      run: jlink --add-modules $(jdeps --ignore-missing-deps -q -recursive --multi-release 21 --print-module-deps -cp 'extracted-jar/dependencies/BOOT-INF/lib/*' application.jar) --strip-java-debug-attributes --no-man-pages --no-header-files --compress=2  --output jdk
+
     - run: tree -L 2
 
   #     - name: Uploading build artifacts
@@ -43,11 +45,7 @@ jobs:
   #       uses: actions/upload-artifact@v3.1.3
   #       with:
   #         name: ${{ inputs.service }}-dockerfile
-  #         path: ./${{ inputs.service }}/Dockerfile
-  ls_java:
-    runs-on: ubuntu-latest
-    steps: 
-    - run: java -version
+  #         path: ./${{ 
   # build_and_push_images:
 
   #   runs-on: ubuntu-latest
