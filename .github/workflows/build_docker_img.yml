@@ -24,14 +24,12 @@ jobs:
     
     - name: Build with Maven Wrapper
       run: ./mvnw -B package -DskipTests
-  
-    - run: tree -L 2
 
     - name: Copy artifact
       run: cp -R target/store-service**.jar application.jar
     
     - name: Extract JAR
-      run: java -Djarmode=layertools -jar target/application.jar extract --destination extracted
+      run: java -Djarmode=layertools -jar application.jar extract --destination extracted
       
     - run: tree -L 2
 
