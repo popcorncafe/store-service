@@ -32,4 +32,5 @@ COPY $EXTRACTED/application/ ./
 
 EXPOSE 8093
 
-ENTRYPOINT ["java", "-cp", "/app", "org.springframework.boot.loader.JarLauncher"]
+ENTRYPOINT bash
+#ENTRYPOINT ["java", "-cp", "/app", "org.springframework.boot.loader.JarLauncher"]
