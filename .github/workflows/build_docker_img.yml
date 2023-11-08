@@ -32,7 +32,7 @@ jobs:
       run: java -Djarmode=layertools -jar application.jar extract --destination app/extracted-jar
 
     - name: Create JRE
-      run: jlink --add-modules $(jdeps --ignore-missing-deps -q -recursive --multi-release 21 --print-module-deps -cp 'app/extracted-jar/dependencies/BOOT-INF/lib/*' application.jar) --strip-java-debug-attributes --no-man-pages --no-header-files --compress=2  --output app/jdk
+      run: jdeps --ignore-missing-deps -q -recursive --multi-release 21 --print-module-deps -cp 'app/extracted-jar/dependencies/BOOT-INF/lib/*' application.jar > app/jdk-module.info
 
     - name: Copy Dockerfile
       run: mv Dockerfile ./app/
