@@ -17,7 +17,7 @@ jobs:
     steps:
 
     - name: test env
-      run: echo $JAVA_VERSION
+      run: echo "$JAVA_VERSION"
       
   #   - name: Checkout
   #     uses: actions/checkout@v4
@@ -73,5 +73,5 @@ jobs:
 
       
 
-    - name: Push image
-      run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/store-service
+    # - name: Push image
+    #   run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/store-service
