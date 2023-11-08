@@ -4,74 +4,67 @@ on:
   workflow_call:
   workflow_dispatch:
   
-env:
-  JAVA_VARSION: 21
-
 jobs:
-
 
   build_jar:
 
     runs-on: ubuntu-latest
 
     steps:
-
-    - name: test env
-      run: echo "$JAVA_VERSION"
-      
-  #   - name: Checkout
-  #     uses: actions/checkout@v4
-
-  #   - name: Set up JDK 21
-  #     uses: actions/setup-java@v3.13.0
-  #     with:
-  #       java-version: '21'
-  #       distribution: 'temurin'
-  #       cache: maven
-        
-  #   - name: Build with Maven Wrapper
-  #     run: ./mvnw -B package -DskipTests
-
-  #   - name: Copy artifact
-  #     run: cp -R target/store-service**.jar application.jar
     
-  #   - name: Extract JAR
-  #     run: java -Djarmode=layertools -jar application.jar extract --destination app/extracted-jar
+    - name: Checkout
+      uses: actions/checkout@v4
 
-  #   - name: Create JRE
-  #     run: jlink --add-modules $(jdeps --ignore-missing-deps -q -recursive --multi-release 21 --print-module-deps -cp 'app/extracted-jar/dependencies/BOOT-INF/lib/*' application.jar) --strip-java-debug-attributes --no-man-pages --no-header-files --compress=2  --output app/jdk
+    - name: Set up JDK 21
+      uses: actions/setup-java@v3.13.0
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        cache: maven
+        
+    - name: Build with Maven Wrapper
+      run: ./mvnw -B package -DskipTests
 
-  #   - name: Copy Dockerfile
-  #     run: mv Dockerfile ./app/
+    - name: Copy artifact
+      run: cp -R target/store-service**.jar application.jar
+    
+    - name: Extract JAR
+      run: java -Djarmode=layertools -jar application.jar extract --destination app/extracted-jar
 
-  #   - name: Upload artifacts
-  #     uses: actions/upload-artifact@v3.1.3
-  #     with: 
-  #       name: artifacts
-  #       path: ./app/
+    - name: Create JRE
+      run: jlink --add-modules $(jdeps --ignore-missing-deps -q -recursive --multi-release 21 --print-module-deps -cp 'app/extracted-jar/dependencies/BOOT-INF/lib/*' application.jar) --strip-java-debug-attributes --no-man-pages --no-header-files --compress=2  --output app/jdk
 
-  # build_docker_img:
-  #   runs-on: ubuntu-latest
-  #   needs: [build_jar]
+    - name: Copy Dockerfile
+      run: mv Dockerfile ./app/
 
-  #   steps:
-  #   - name: Load artifacts
-  #     uses: actions/download-artifact@v3.0.2
-  #     with:
-  #       name: artifacts
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3.1.3
+      with: 
+        name: artifacts
+        path: ./app/
 
-  #   - run: tree -L 3
+  build_docker_img:
+    runs-on: ubuntu-latest
+    needs: [build_jar]
 
-  #   - name: DockerHub Login
-  #     uses: docker/login-action@v3.0.0
-  #     with:
-  #       username: ${{ secrets.DOCKERHUB_USERNAME }}
-  #       password: ${{ secrets.DOCKERHUB_TOKEN }}
+    steps:
+    - name: Load artifacts
+      uses: actions/download-artifact@v3.0.2
+      with:
+        name: artifacts
 
-  #   - name: Build Docker image
-  #     run: docker build . --tag ${{ secrets.DOCKERHUB_USERNAME }}/store-service
+    - run: tree -L 3
+
+    - name: DockerHub Login
+      uses: docker/login-action@v3.0.0
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Build Docker image
+      run: docker build . --tag ${{ secrets.DOCKERHUB_USERNAME }}/store-service
 
       
 
-    # - name: Push image
-    #   run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/store-service
+    - name: Push image
+      run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/store-service
