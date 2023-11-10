@@ -46,27 +46,68 @@ public class CartDaoImpl implements CartDao {
     }
 
     @Override
-    public UUID save(Cart model) {
-        return null;
+    public UUID save(Cart cart) {
+        var sql = """
+                INSERT INTO cart (client_id, store_id, order_price, status)
+                VALUES (:client_id, :store_id, :order_price, :status)
+                RETURNING cart_id;
+                """;
+
+        var params = new MapSqlParameterSource()
+                .addValue("client_id", cart.clientId())
+                .addValue("storeId", cart.storeId())
+                .addValue("order_price", cart.orderPrice())
+                .addValue("status", cart.status().name());
+
+        return parameterJdbcTemplate.queryForObject(sql, params, UUID.class);
     }
 
     @Override
-    public boolean update(Cart model) {
-        return false;
+    public boolean update(Cart cart) {
+        var sql = """
+                UPDATE cart
+                SET status=:status
+                WHERE cart_id=:cart_id
+                """;
+
+        var params = new MapSqlParameterSource()
+                .addValue("storeId", cart.storeId())
+                .addValue("status", cart.status().name());
+
+        return parameterJdbcTemplate.update(sql, params) == 1;
     }
 
     @Override
     public boolean delete(UUID id) {
-        return false;
-    }
-
-    @Override
-    public Optional<Cart> findByStoreId(UUID id) {
-        return Optional.empty();
+        return parameterJdbcTemplate.update(
+                "DELETE FROM cart WHERE cart_id=:cart_id;",
+                Map.of("cart_id", id)) == 1;
     }
 
     @Override
     public List<Cart> findByClientId(long id) {
-        return null;
+        var sql = """
+                SELECT cart_id, client_id, store_id, order_date, order_price, status
+                FROM cart
+                WHERE client_id=:client_id
+                LIMIT 50;
+                """;
+        return parameterJdbcTemplate.query(sql, Map.of("client_id", id), new CartMapper());
+    }
+
+    @Override
+    public List<Cart> findByStoreId(UUID id, Page page) {
+        var sql = """
+                SELECT cart_id, client_id, store_id, order_date, order_price, status
+                FROM cart
+                WHERE store_id=:store_id
+                LIMIT :page_size
+                OFFSET :page_offset;
+                """;
+        var params = new MapSqlParameterSource()
+                .addValue("store_id", id)
+                .addValue("page_size", page.size())
+                .addValue("page_offset", page.offset());
+        return parameterJdbcTemplate.query(sql, params, new CartMapper());
     }
 }

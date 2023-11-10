@@ -5,7 +5,7 @@ import java.util.UUID;
 public record Ingredient(
         UUID ingredientId,
         String name,
-        float price,
+        float unitPrice,
         Measure measure
 ) implements Model {
     public enum Measure {

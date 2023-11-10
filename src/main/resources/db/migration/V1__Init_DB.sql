@@ -25,7 +25,7 @@ CREATE TABLE ingredient
 CREATE TABLE product
 (
     product_id          uuid PRIMARY KEY      DEFAULT gen_random_uuid(),
-    name        varchar(20)  NOT NULL,
+    name varchar(20) NOT NULL DEFAULT ' ',
     description varchar(200) NOT NULL DEFAULT ' ',
     size        varchar(6)     NOT NULL DEFAULT 'SMALL'
 );
@@ -41,7 +41,8 @@ CREATE TABLE product_ingredient
 (
     product_id    uuid   NOT NULL REFERENCES product (product_id) ON DELETE CASCADE,
     ingredient_id uuid   NOT NULL REFERENCES ingredient (ingredient_id) ON DELETE CASCADE,
-    amount        float4 NULL
+    amount float4 NULL,
+    CONSTRAINT unique_product_ingredient UNIQUE (product_id, ingredient_id)
 );
 
 CREATE TABLE cart
