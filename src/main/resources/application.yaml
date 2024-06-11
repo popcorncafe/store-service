@@ -3,20 +3,17 @@ spring:
     name: store-service
   main:
     banner-mode: off
-
-app:
-  main:
-    datasource:
-      postgres-db:
-        jdbc-url: jdbc:postgresql://${STORE_POSTGRES_HOST:localhost}:${STORE_POSTGRES_PORT:5432}/store_db
-        username: store-service
-        password: ${STORE_POSTGRES_PASSWORD:storePassWord}
-        driver-class-name: org.postgresql.Driver
-        connection-timeout: 20000
-        minimum-idle: 5
-        maximum-pool-size: 10
-        max-lifetime: 90000
-
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/store_service?currentSchema=store
+    username: store_service
+    password: cCdvZWt0NDk4W2llazJb
+  cache:
+    type: redis
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 server:
   port: 8093
