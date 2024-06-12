@@ -1,33 +1,39 @@
-FROM eclipse-temurin:21-jdk-alpine as build-jdk
+FROM eclipse-temurin:21-jdk-alpine as build-jre
 
-COPY jdk-module.info .
+WORKDIR /opt
 
-RUN jlink --add-modules $(cat jdk-module.info) --strip-java-debug-attributes  \
-    --no-man-pages --no-header-files --output jdk
+COPY jdk-modules.info .
 
-FROM alpine:3.18
+RUN jlink \
+             --add-modules $(cat jdk-modules.info) \
+             --no-header-files \
+             --no-man-pages \
+             --strip-debug \
+             --output jdk
+
+FROM alpine:3.19
 
 VOLUME /tmp
 
-ARG APPLICATION_USER=spring-app
+ENV JAR_PATH=extracted-jar
+ENV APP_USER=spring-app
 
 ENV JAVA_HOME=/jdk
-ENV PATH="${PATH}:${JAVA_HOME}/bin"
+ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
-RUN adduser --no-create-home -u 1000 -D $APPLICATION_USER
+RUN adduser --no-create-home -u 1000 -D $APP_USER
 
-RUN mkdir /app
-RUN chown -R $APPLICATION_USER /app
+RUN mkdir /app && chown -R $APP_USER /app
 
 USER 1000
 
 WORKDIR /app
 
-COPY --from=build-jdk jdk $JAVA_HOME
-COPY extracted-jar/spring-boot-loader/ ./
-COPY extracted-jar/dependencies/ ./
-COPY extracted-jar/application/ ./
+COPY --from=build-jre opt/jdk $JAVA_HOME
+COPY $JAR_PATH/dependencies/ ./
+COPY $JAR_PATH/spring-boot-loader/ ./
+COPY $JAR_PATH/application/ ./
 
 EXPOSE 8093
 
-ENTRYPOINT ["java", "-cp", "/app", "org.springframework.boot.loader.JarLauncher"]
+ENTRYPOINT ["java", "-cp", "/app", "org.springframework.boot.loader.launch.JarLauncher"]
