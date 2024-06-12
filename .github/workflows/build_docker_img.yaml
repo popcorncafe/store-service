@@ -58,7 +58,7 @@ jobs:
           logout: true
 
       - name: Build Docker image
-        run: docker build . --tag ${{ secrets.DOCKERHUB_USERNAME }}/employee-service
+        run: docker build . --tag ${{ secrets.DOCKERHUB_USERNAME }}/store-service
 
       - name: Push image
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/employee-service
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/store-service
