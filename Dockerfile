@@ -11,7 +11,7 @@ RUN jlink \
              --strip-debug \
              --output jdk
 
-FROM alpine:3.19
+FROM alpine:3.20
 
 VOLUME /tmp
 
