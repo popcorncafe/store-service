@@ -41,7 +41,7 @@ public class StoreRepositoryImpl implements StoreRepository {
     @Cacheable(value = "StoreRepository::getAll", key = "#page.hashCode()")
     public List<Store> getAll(Page page) {
         var sql = """
-                SELECT s.store_id, s.location[0] AS longitude, s.location[1] AS latitude, a.city_name, a.street_name, a.home_number, a.home_letter
+                SELECT s.store_id, s.location[0] AS longitude, s.location[1] AS latitude, s.address_id, a.city_name, a.street_name, a.home_number, a.home_letter
                 FROM store AS s
                 INNER JOIN address AS a ON s.address_id = a.address_id
                 LIMIT :page_size
