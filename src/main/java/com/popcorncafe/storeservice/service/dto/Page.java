@@ -5,11 +5,11 @@ public record Page(
         int number
 ) {
     public int offset() {
-        return this.number() * this.size();
+        return number() * size();
     }
 
     @Override
     public int hashCode() {
-        return Integer.valueOf(String.format("%d%d", this.size(), this.number()));
+        return Integer.valueOf(String.format("%d%d", size(), number()));
     }
 }
