@@ -41,8 +41,7 @@ public class IngredientRepositoryImpl implements IngredientRepository {
                         FROM ingredient
                         WHERE ingredient_id=:ingredient_id
                         LIMIT 1;
-                        """, Map.of("ingredient_id", id), new IngredientMapper())
-                .stream()
+                        """, Map.of("ingredient_id", id), new IngredientMapper()).stream()
                 .findFirst();
     }
 
@@ -58,8 +57,9 @@ public class IngredientRepositoryImpl implements IngredientRepository {
                         FROM ingredient
                         LIMIT :page_size
                         OFFSET :page_offset;
-                        """,
-                Map.of("page_size", page.size(), "page_offset", page.offset()), new IngredientMapper());
+                        """, Map.of("page_size", page.size(), "page_offset", page.offset()),
+                new IngredientMapper()
+        );
     }
 
     @Override
@@ -69,41 +69,38 @@ public class IngredientRepositoryImpl implements IngredientRepository {
         log.debug("Creating ingredient");
 
         return parameterJdbcTemplate.queryForObject("""
-                        INSERT INTO ingredient(name, unit_price, measure)
-                        VALUES (:name, :unit_price, :measure)
-                        RETURNING ingredient_id;
-                        """,
-                Map.of("name", ingredient.name(), "unit_price", ingredient.unitPrice(), "measure", ingredient.measure().name()), UUID.class);
+                INSERT INTO ingredient(name, unit_price, measure)
+                VALUES (:name, :unit_price, :measure)
+                RETURNING ingredient_id;
+                """, Map.of("name", ingredient.name(), "unit_price",
+                ingredient.unitPrice(), "measure",
+                ingredient.measure().name()
+        ), UUID.class);
     }
 
     @Override
-    @Caching(
-            evict = @CacheEvict(value = "IngredientRepository::getAll", allEntries = true),
-            put = @CachePut(value = "IngredientRepository::get", key = "#ingredient.ingredientId()")
-    )
+    @Caching(evict = @CacheEvict(value = "IngredientRepository::getAll", allEntries = true), put = @CachePut(value = "IngredientRepository::get", key = "#ingredient.ingredientId()"))
     public boolean update(Ingredient ingredient) {
 
         log.debug("Updating ingredient with id: {}", ingredient.ingredientId());
 
         return parameterJdbcTemplate.update("""
-                        UPDATE ingredient
-                        SET name=:name,
-                            unit_price=:unit_price,
-                            measure=:measure
-                        WHERE ingredient_id=:ingredient_id;                                
-                        """,
-                Map.of("name", ingredient.name(), "unit_price", ingredient.unitPrice(), "measure", ingredient.measure().name(), "ingredient_id", ingredient.ingredientId())
-        ) >= 1;
+                UPDATE ingredient
+                SET name=:name,
+                    unit_price=:unit_price,
+                    measure=:measure
+                WHERE ingredient_id=:ingredient_id;                                
+                """, Map.of("name", ingredient.name(), "unit_price", ingredient.unitPrice(),
+                "measure", ingredient.measure().name(), "ingredient_id",
+                ingredient.ingredientId()
+        )) >= 1;
     }
 
     @Override
-    @Caching(evict = {
-            @CacheEvict(value = "IngredientRepository::get", key = "#id"),
-            @CacheEvict(value = "IngredientRepository::getAll", allEntries = true)
-    })
+    @Caching(evict = {@CacheEvict(value = "IngredientRepository::get", key = "#id"),
+            @CacheEvict(value = "IngredientRepository::getAll", allEntries = true)})
     public boolean delete(UUID id) {
-        return parameterJdbcTemplate.update(
-                "DELETE FROM ingredient WHERE ingredient_id=:ingredient_id;",
+        return parameterJdbcTemplate.update("DELETE FROM ingredient WHERE ingredient_id=:ingredient_id;",
                 Map.of("ingredient_id", id)
         ) >= 1;
     }
@@ -112,14 +109,14 @@ public class IngredientRepositoryImpl implements IngredientRepository {
     public Map<UUID, Float> getByStore(UUID id) {
 
         return parameterJdbcTemplate.query("""
-                                SELECT ingredient_id, amount
-                                FROM store_ingredient
-                                WHERE store_id=:store_id;
-                                """,
-                        Map.of("store_id", id),
-                        (rs, rowNum) -> Map.entry(UUID.fromString(rs.getString("ingredient_id")), rs.getFloat("amount")))
-                .stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                        SELECT ingredient_id, amount
+                        FROM store_ingredient
+                        WHERE store_id=:store_id;
+                        """, Map.of("store_id", id),
+                (rs, rowNum) -> Map.entry(UUID.fromString(rs.getString("ingredient_id")),
+                        rs.getFloat("amount")
+                )
+        ).stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     @Override
@@ -135,14 +132,14 @@ public class IngredientRepositoryImpl implements IngredientRepository {
 //                        .toArray(Map[]::new)
 //        ).length == amount.size(); 
         return parameterJdbcTemplate.batchUpdate("""
-                        INSERT INTO store_ingredient(store_id, ingredient_id, amount)
-                        VALUES (:store_id, :ingredient_id, :amount)
-                        ON CONFLICT (store_id, ingredient_id) DO UPDATE
-                        SET amount=:amount;
-                        """,
-                amount.entrySet().stream()
-                        .map(entry -> Map.of("store_id", id, "ingredient_id", entry.getKey(), "amount", entry.getValue()))
-                        .toArray(Map[]::new)
-        ).length == amount.size();
+                INSERT INTO store_ingredient(store_id, ingredient_id, amount)
+                VALUES (:store_id, :ingredient_id, :amount)
+                ON CONFLICT (store_id, ingredient_id) DO UPDATE
+                SET amount=:amount;
+                """, amount.entrySet().stream()
+                .map(entry -> Map.of("store_id", id, "ingredient_id",
+                        entry.getKey(), "amount",
+                        entry.getValue()
+                )).toArray(Map[]::new)).length == amount.size();
     }
 }

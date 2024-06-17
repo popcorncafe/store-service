@@ -32,9 +32,7 @@ public class StoreRepositoryImpl implements StoreRepository {
                 WHERE s.store_id=:store_id
                 LIMIT 1;
                 """;
-        return parameterJdbcTemplate.query(sql, Map.of("store_id", id), new StoreMapper())
-                .stream()
-                .findFirst();
+        return parameterJdbcTemplate.query(sql, Map.of("store_id", id), new StoreMapper()).stream().findFirst();
     }
 
     @Override
@@ -47,8 +45,7 @@ public class StoreRepositoryImpl implements StoreRepository {
                 LIMIT :page_size
                 OFFSET :page_offset;
                 """;
-        var params = new MapSqlParameterSource()
-                .addValue("page_size", page.size())
+        var params = new MapSqlParameterSource().addValue("page_size", page.size())
                 .addValue("page_offset", page.offset());
         return parameterJdbcTemplate.query(sql, params, new StoreMapper());
     }
@@ -65,8 +62,7 @@ public class StoreRepositoryImpl implements StoreRepository {
                 VALUES ((SELECT address_id FROM new_address), point(:longitude, :latitude))
                 RETURNING store_id;
                 """;
-        var params = new MapSqlParameterSource()
-                .addValue("city_name", store.address().city())
+        var params = new MapSqlParameterSource().addValue("city_name", store.address().city())
                 .addValue("street_name", store.address().street())
                 .addValue("home_number", store.address().homeNumber())
                 .addValue("home_letter", store.address().homeLetter())
@@ -79,22 +75,21 @@ public class StoreRepositoryImpl implements StoreRepository {
     @Override
     public boolean update(Store store) {
         var sql = """
-            WITH updated_store AS (
-                UPDATE store
-                SET location = point(:longitude, :latitude)
-                WHERE store_id = :store_id
-                RETURNING address_id
-            )
-            UPDATE address
-            SET city_name = :city_name,
-                street_name = :street_name,
-                home_number = :home_number,
-                home_letter = :home_letter
-            WHERE address_id = (SELECT address_id FROM updated_store);
-            """;
+                WITH updated_store AS (
+                    UPDATE store
+                    SET location = point(:longitude, :latitude)
+                    WHERE store_id = :store_id
+                    RETURNING address_id
+                )
+                UPDATE address
+                SET city_name = :city_name,
+                    street_name = :street_name,
+                    home_number = :home_number,
+                    home_letter = :home_letter
+                WHERE address_id = (SELECT address_id FROM updated_store);
+                """;
 
-        var params = new MapSqlParameterSource()
-                .addValue("longitude", store.location().longitude())
+        var params = new MapSqlParameterSource().addValue("longitude", store.location().longitude())
                 .addValue("latitude", store.location().latitude())
                 .addValue("store_id", store.storeId())
                 .addValue("city_name", store.address().city())
@@ -113,16 +108,14 @@ public class StoreRepositoryImpl implements StoreRepository {
     @Override
     public List<Store> getByLocation(Store.Location location) {
 
-        return parameterJdbcTemplate.query("""
+        return parameterJdbcTemplate.query(
+                """
                 SELECT s.store_id, s.location[0] AS longitude, s.location[1] AS latitude, s.address_id, a.city_name, a.street_name, a.home_number, a.home_letter
                 FROM store AS s
                 INNER JOIN address AS a ON s.address_id = a.address_id
                 ORDER BY s.location <-> point(:longitude, :latitude)
                 LIMIT 3;
-                """,
-                new MapSqlParameterSource()
-                        .addValue("longitude", location.longitude())
-                        .addValue("latitude", location.latitude()),
-                new StoreMapper());
+                        """, new MapSqlParameterSource().addValue("longitude", location.longitude())
+                        .addValue("latitude", location.latitude()), new StoreMapper());
     }
 }

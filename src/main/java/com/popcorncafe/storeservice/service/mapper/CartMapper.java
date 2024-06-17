@@ -19,32 +19,16 @@ public class CartMapper implements Mapper<Cart, CartDto> {
 
     @Override
     public Cart toModel(CartDto dto) {
-        return new Cart(
-                dto.id(),
-                dto.clientId(),
-                dto.storeId(),
-                dto.orderDate(),
-                dto.orderPrice(),
+        return new Cart(dto.id(), dto.clientId(), dto.storeId(), dto.orderDate(), dto.orderPrice(),
                 Cart.Status.valueOf(dto.status()),
-                dto.products().stream()
-                        .map(productService::getProduct)
-                        .map(productMapper::toModel)
-                        .toList()
+                dto.products().stream().map(productService::getProduct).map(productMapper::toModel).toList()
         );
     }
 
     @Override
     public CartDto toDto(Cart model) {
-        return new CartDto(
-                model.cartId(),
-                model.clientId(),
-                model.storeId(),
-                model.orderDate(),
-                model.orderPrice(),
-                model.status().name(),
-                model.products().stream()
-                        .map(Product::productId)
-                        .toList()
+        return new CartDto(model.cartId(), model.clientId(), model.storeId(), model.orderDate(), model.orderPrice(),
+                model.status().name(), model.products().stream().map(Product::productId).toList()
         );
     }
 }

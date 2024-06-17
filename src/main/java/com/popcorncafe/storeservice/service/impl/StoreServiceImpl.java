@@ -30,16 +30,13 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     public List<StoreDto> getStores(Page page) {
-        return storeRepository.getAll(page).stream()
-                .map(mapper::toDto)
-                .toList();
+        return storeRepository.getAll(page).stream().map(mapper::toDto).toList();
     }
 
     @Override
     @Cacheable(value = "StoreService::get", key = "#id")
     public StoreDto getStore(UUID id) {
-        return storeRepository.get(id)
-                .map(mapper::toDto)
+        return storeRepository.get(id).map(mapper::toDto)
                 .orElseThrow(() -> new RuntimeException("Could not find the Store for the given id."));
     }
 
@@ -47,11 +44,7 @@ public class StoreServiceImpl implements StoreService {
     @CachePut(value = "StoreService::get", key = "#storeDto.id()")
     public StoreDto createStore(StoreDto storeDto) {
         var storeId = storeRepository.create(mapper.toModel(storeDto));
-        return new StoreDto(
-                storeId,
-                storeDto.address(),
-                storeDto.location()
-        );
+        return new StoreDto(storeId, storeDto.address(), storeDto.location());
     }
 
     @Override
@@ -62,9 +55,7 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     public List<StoreDto> getStoresByLocation(Store.Location location) {
-        return storeRepository.getByLocation(location).stream()
-                .map(mapper::toDto)
-                .toList();
+        return storeRepository.getByLocation(location).stream().map(mapper::toDto).toList();
     }
 
     @Override

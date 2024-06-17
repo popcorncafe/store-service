@@ -29,8 +29,8 @@ public class IngredientController {
 
     @GetMapping("/{size}/{num}")
     public ResponseEntity<List<IngredientDto>> getIngredients(
-            @PathVariable("size") int size,
-            @PathVariable("num") int num) {
+            @PathVariable("size") int size, @PathVariable("num") int num
+    ) {
         return ResponseEntity.ok(ingredientService.getIngredients(new Page(size, num)));
     }
 
@@ -65,7 +65,9 @@ public class IngredientController {
     }
 
     @PostMapping("/amount/{id}")
-    public ResponseEntity<Boolean> updateAmountByStore(@RequestBody Map<UUID, Float> amount, @PathVariable("id") UUID id) {
+    public ResponseEntity<Boolean> updateAmountByStore(
+            @RequestBody Map<UUID, Float> amount, @PathVariable("id") UUID id
+    ) {
         return ResponseEntity.ok(ingredientService.updateAmountByStore(amount, id));
     }
 }

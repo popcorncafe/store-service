@@ -29,8 +29,8 @@ public class ProductController {
 
     @GetMapping("/{size}/{num}")
     public ResponseEntity<List<ProductDto>> getProducts(
-            @PathVariable("size") int size,
-            @PathVariable("num") int num) {
+            @PathVariable("size") int size, @PathVariable("num") int num
+    ) {
         return ResponseEntity.ok(productService.getProducts(new Page(size, num)));
     }
 
@@ -45,7 +45,9 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto productDto, @RequestBody Map<UUID, Float> ingredients) {
+    public ResponseEntity<ProductDto> createProduct(
+            @RequestBody ProductDto productDto, @RequestBody Map<UUID, Float> ingredients
+    ) {
         return ResponseEntity.ok(productService.createProduct(productDto, ingredients));
     }
 

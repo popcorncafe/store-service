@@ -28,8 +28,8 @@ public class AddressController {
 
     @GetMapping("/{size}/{num}")
     public ResponseEntity<List<AddressDto>> getAddresses(
-            @PathVariable("size") int size,
-            @PathVariable("num") int num) {
+            @PathVariable("size") int size, @PathVariable("num") int num
+    ) {
         return ResponseEntity.ok(addressService.getAddresses(new Page(size, num)));
     }
 

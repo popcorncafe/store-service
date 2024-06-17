@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface AbstractRepository<T extends Model> {
+
     Optional<T> get(UUID id);
 
     List<T> getAll(Page page);

@@ -2,48 +2,36 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.0</version>
-        <relativePath/>
-    </parent>
-
-    <groupId>com.popcorncafe</groupId>
     <artifactId>store-service</artifactId>
+
     <version>0.0.1-SNAPSHOT</version>
-    <name>Store service</name>
-    <description>Service for performing tasks related to the store</description>
 
     <properties>
         <jacoco.maven.plugin.version>0.8.12</jacoco.maven.plugin.version>
-        <maven.compiler.target>21</maven.compiler.target>
         <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
-
-
         <!--        WEB-->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <groupId>org.springframework.boot</groupId>
         </dependency>
 
         <!--        DATA-->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jdbc</artifactId>
+            <groupId>org.springframework.boot</groupId>
         </dependency>
         <dependency>
-            <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
+            <groupId>org.flywaydb</groupId>
         </dependency>
         <dependency>
-            <groupId>org.flywaydb</groupId>
             <artifactId>flyway-database-postgresql</artifactId>
+            <groupId>org.flywaydb</groupId>
         </dependency>
         <!--        <dependency>-->
         <!--            <groupId>org.springframework.kafka</groupId>-->
@@ -51,40 +39,40 @@
         <!--        </dependency>-->
 
         <dependency>
-            <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
+            <groupId>org.postgresql</groupId>
             <scope>runtime</scope>
         </dependency>
 
         <!--        CACHE-->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-cache</artifactId>
+            <groupId>org.springframework.boot</groupId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
+            <groupId>org.springframework.boot</groupId>
         </dependency>
 
         <!--        TEST-->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <artifactId>spring-boot-testcontainers</artifactId>
+            <groupId>org.springframework.boot</groupId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.testcontainers</groupId>
             <artifactId>junit-jupiter</artifactId>
+            <groupId>org.testcontainers</groupId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.testcontainers</groupId>
             <artifactId>postgresql</artifactId>
+            <groupId>org.testcontainers</groupId>
             <scope>test</scope>
         </dependency>
 
@@ -96,26 +84,35 @@
 
         <!--        TOOLS-->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-docker-compose</artifactId>
+            <groupId>org.springframework.boot</groupId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
+            <groupId>org.springframework.boot</groupId>
         </dependency>
     </dependencies>
+    <description>Service for performing tasks related to the store</description>
+    <groupId>com.popcorncafe</groupId>
+    <modelVersion>4.0.0</modelVersion>
+    <name>Store service</name>
+
+    <parent>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <groupId>org.springframework.boot</groupId>
+        <relativePath/>
+        <version>3.3.0</version>
+    </parent>
 
     <build>
         <plugins>
             <plugin>
-                <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <groupId>org.springframework.boot</groupId>
             </plugin>
             <plugin>
-                <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>${jacoco.maven.plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -123,14 +120,17 @@
                         </goals>
                     </execution>
                     <execution>
-                        <id>report</id>
-                        <phase>test</phase>
                         <goals>
                             <goal>report</goal>
                         </goals>
+                        <id>report</id>
+                        <phase>test</phase>
                     </execution>
                 </executions>
+                <groupId>org.jacoco</groupId>
+                <version>${jacoco.maven.plugin.version}</version>
             </plugin>
         </plugins>
     </build>
+
 </project>

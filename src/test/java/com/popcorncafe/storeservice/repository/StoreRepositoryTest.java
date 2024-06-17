@@ -35,8 +35,7 @@ class StoreRepositoryTest {
 
     @Container
     @ServiceConnection
-    static GenericContainer<?> redisContainer = new GenericContainer<>("redis:7.2.4-alpine3.19")
-            .withExposedPorts(6379);
+    static GenericContainer<?> redisContainer = new GenericContainer<>("redis:7.2.4-alpine3.19").withExposedPorts(6379);
 
     private final List<Store> stores = new ArrayList<>();
     private final Random rn = new Random();
@@ -69,8 +68,7 @@ class StoreRepositoryTest {
 
         testStores.forEach(store -> {
 
-            var params = new MapSqlParameterSource()
-                    .addValue("city_name", store.address().city())
+            var params = new MapSqlParameterSource().addValue("city_name", store.address().city())
                     .addValue("street_name", store.address().street())
                     .addValue("home_number", store.address().homeNumber())
                     .addValue("home_letter", store.address().homeLetter())
@@ -84,8 +82,7 @@ class StoreRepositoryTest {
 
         Store testStore = createFakeStore();
 
-        var params = new MapSqlParameterSource()
-                .addValue("city_name", testStore.address().city())
+        var params = new MapSqlParameterSource().addValue("city_name", testStore.address().city())
                 .addValue("street_name", testStore.address().street())
                 .addValue("home_number", testStore.address().homeNumber())
                 .addValue("home_letter", testStore.address().homeLetter())
@@ -106,20 +103,9 @@ class StoreRepositoryTest {
     }
 
     private Store createFakeStore() {
-        return new Store(
-                null,
-                new Address(
-                        null,
-                        "city #" + rn.nextInt(10000),
-                        "street #" + rn.nextInt(10000),
-                        rn.nextInt(100),
-                        String.valueOf((char) (rn.nextInt(26) + 'a'))
-                ),
-                new Store.Location(
-                        -180 + rn.nextFloat() * 360,
-                        -90 + rn.nextFloat() * 180
-                )
-        );
+        return new Store(null, new Address(null, "city #" + rn.nextInt(10000), "street #" + rn.nextInt(10000),
+                rn.nextInt(100), String.valueOf((char) (rn.nextInt(26) + 'a'))
+        ), new Store.Location(-180 + rn.nextFloat() * 360, -90 + rn.nextFloat() * 180));
     }
 
     @Test
@@ -145,19 +131,16 @@ class StoreRepositoryTest {
         assertThat(expectedStores.size()).isEqualTo(stores.size());
 
         expectedStores.forEach(expectedStore -> {
-                    var store = stores.stream()
-                            .filter(s -> s.storeId().equals(expectedStore.storeId()))
-                            .findFirst()
-                            .orElseThrow();
+            var store = stores.stream().filter(s -> s.storeId().equals(expectedStore.storeId())).findFirst()
+                    .orElseThrow();
 
-                    assertThat(expectedStore.storeId()).isEqualTo(store.storeId());
-                    assertThat(expectedStore.address().city()).isEqualTo(store.address().city());
-                    assertThat(expectedStore.address().street()).isEqualTo(store.address().street());
-                    assertThat(expectedStore.address().homeNumber()).isEqualTo(store.address().homeNumber());
-                    assertThat(expectedStore.address().homeLetter()).isEqualTo(store.address().homeLetter());
-                    assertThat(expectedStore.location()).isEqualTo(store.location());
-                }
-        );
+            assertThat(expectedStore.storeId()).isEqualTo(store.storeId());
+            assertThat(expectedStore.address().city()).isEqualTo(store.address().city());
+            assertThat(expectedStore.address().street()).isEqualTo(store.address().street());
+            assertThat(expectedStore.address().homeNumber()).isEqualTo(store.address().homeNumber());
+            assertThat(expectedStore.address().homeLetter()).isEqualTo(store.address().homeLetter());
+            assertThat(expectedStore.location()).isEqualTo(store.location());
+        });
     }
 
     @Test
@@ -188,19 +171,10 @@ class StoreRepositoryTest {
 
         var storeId = storeRepository.create(testStore);
 
-        var updatedStore = new Store(
-                storeId,
-                new Address(
-                        null,
-                        "city #" + rn.nextInt(10000),
-                        "street #" + rn.nextInt(10000),
-                        rn.nextInt(100),
-                        String.valueOf((char) (rn.nextInt(26) + 'a'))
-                ),
-                new Store.Location(
-                        -180 + rn.nextFloat() * 360,
-                        -90 + rn.nextFloat() * 180
-                )
+        var updatedStore = new Store(storeId,
+                new Address(null, "city #" + rn.nextInt(10000), "street #" + rn.nextInt(10000),
+                        rn.nextInt(100), String.valueOf((char) (rn.nextInt(26) + 'a'))
+                ), new Store.Location(-180 + rn.nextFloat() * 360, -90 + rn.nextFloat() * 180)
         );
 
         var updated = storeRepository.update(updatedStore);
@@ -245,32 +219,20 @@ class StoreRepositoryTest {
     void StoreRepository_GetByLocation_ReturnsListOfNearbyStoresMaxTo3() {
         var testStoresId = new ArrayList<UUID>();
 
-        var testLocation = new Store.Location(
-                -180 + rn.nextFloat() * 360,
-                -90 + rn.nextFloat() * 180
-        );
+        var testLocation = new Store.Location(-180 + rn.nextFloat() * 360, -90 + rn.nextFloat() * 180);
 
         for (int i = 0; i < 3; i++) {
 
-            var testStore = new Store(
-                    null,
-                    new Address(
-                            null,
-                            "city #" + rn.nextInt(10000),
-                            "street #" + rn.nextInt(10000),
-                            rn.nextInt(100),
-                            String.valueOf((char) (rn.nextInt(26) + 'a'))
-                    ),
-                    testLocation
+            var testStore = new Store(null,
+                    new Address(null, "city #" + rn.nextInt(10000), "street #" + rn.nextInt(10000),
+                            rn.nextInt(100), String.valueOf((char) (rn.nextInt(26) + 'a'))
+                    ), testLocation
             );
 
             testStoresId.add(storeRepository.create(testStore));
         }
 
-        var testStores = testStoresId.stream()
-                .map(storeRepository::get)
-                .map(Optional::orElseThrow)
-                .toList();
+        var testStores = testStoresId.stream().map(storeRepository::get).map(Optional::orElseThrow).toList();
 
         var expectedStores = storeRepository.getByLocation(testLocation);
 

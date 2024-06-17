@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface StoreService {
+
     List<StoreDto> getStores(Page page);
 
     StoreDto getStore(UUID id);

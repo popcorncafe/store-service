@@ -29,16 +29,15 @@ public class CartController {
 
     @GetMapping("/{size}/{num}")
     public ResponseEntity<List<CartDto>> getCarts(
-            @PathVariable("size") int size,
-            @PathVariable("num") int num) {
+            @PathVariable("size") int size, @PathVariable("num") int num
+    ) {
         return ResponseEntity.ok(cartService.getCarts(new Page(size, num)));
     }
 
     @GetMapping("/store/{id}/{size}/{num}")
     public ResponseEntity<List<CartDto>> getByStoreId(
-            @PathVariable("id") UUID id,
-            @PathVariable("size") int size,
-            @PathVariable("num") int num) {
+            @PathVariable("id") UUID id, @PathVariable("size") int size, @PathVariable("num") int num
+    ) {
         return ResponseEntity.ok(cartService.getByStore(id, new Page(size, num)));
     }
 

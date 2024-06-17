@@ -14,11 +14,6 @@ public class ProductMapper implements Mapper<Product, ProductDto> {
 
     @Override
     public ProductDto toDto(Product model) {
-        return new ProductDto(
-                model.productId(),
-                model.name(),
-                model.description(),
-                model.size().name()
-        );
+        return new ProductDto(model.productId(), model.name(), model.description(), model.size().name());
     }
 }

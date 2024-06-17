@@ -38,9 +38,7 @@ public class ProductRepositoryImpl implements ProductRepository {
                 WHERE product_id=:product_id
                 LIMIT 1;
                 """;
-        return parameterJdbcTemplate.query(sql, Map.of("product_id", id), new ProductMapper())
-                .stream()
-                .findFirst();
+        return parameterJdbcTemplate.query(sql, Map.of("product_id", id), new ProductMapper()).stream().findFirst();
     }
 
     @Override
@@ -52,8 +50,7 @@ public class ProductRepositoryImpl implements ProductRepository {
                 LIMIT :page_size
                 OFFSET :page_offset;
                 """;
-        var params = new MapSqlParameterSource()
-                .addValue("page_size", page.size())
+        var params = new MapSqlParameterSource().addValue("page_size", page.size())
                 .addValue("page_offset", page.offset());
         return parameterJdbcTemplate.query(sql, params, new ProductMapper());
     }
@@ -66,8 +63,7 @@ public class ProductRepositoryImpl implements ProductRepository {
                 VALUES (:name, :description, :size)
                 RETURNING product_id;
                 """;
-        var params = new MapSqlParameterSource()
-                .addValue("name", product.name())
+        var params = new MapSqlParameterSource().addValue("name", product.name())
                 .addValue("description", product.description())
                 .addValue("size", product.size().name());
         var productId = parameterJdbcTemplate.queryForObject(sql, params, UUID.class);
@@ -78,12 +74,12 @@ public class ProductRepositoryImpl implements ProductRepository {
                 """;
 
         int inserts = parameterJdbcTemplate.batchUpdate(ingredientSql,
-                getParameterSourcesForProductIngredients(product, productId)).length;
+                getParameterSourcesForProductIngredients(product, productId)
+        ).length;
 
         if (inserts != product.ingredientAmount().size()) {
             throw new ResourceWritingException(
-                    "Error while saving ingredients for product with id: " + productId.toString()
-            );
+                    "Error while saving ingredients for product with id: " + productId.toString());
         }
         return productId;
     }
@@ -99,8 +95,7 @@ public class ProductRepositoryImpl implements ProductRepository {
                     size=:size
                 WHERE product_id=:product_id;
                 """;
-        var params = new MapSqlParameterSource()
-                .addValue("name", product.name())
+        var params = new MapSqlParameterSource().addValue("name", product.name())
                 .addValue("description", product.description())
                 .addValue("size", product.size().name());
         int updates = parameterJdbcTemplate.update(sql, params);
@@ -111,13 +106,13 @@ public class ProductRepositoryImpl implements ProductRepository {
                 ON CONFLICT (product_id, ingredient_id)
                 DO UPDATE SET amount = excluded.amount;
                 """;
-        updates += parameterJdbcTemplate.batchUpdate(ingredientSql,
-                getParameterSourcesForProductIngredients(product, product.productId())).length;
+        updates += parameterJdbcTemplate.batchUpdate(ingredientSql, getParameterSourcesForProductIngredients(product,
+                product.productId()
+        )).length;
 
         if (updates != product.ingredientAmount().size() + 1) {
             throw new ResourceWritingException(
-                    "Error while updating ingredients for product with id: " + product.productId().toString()
-            );
+                    "Error while updating ingredients for product with id: " + product.productId().toString());
         }
         return true;
     }
@@ -125,7 +120,8 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Override
     @CacheEvict(value = "ProductRepository::get", key = "#id")
     public boolean delete(UUID id) {
-        return parameterJdbcTemplate.update("DELETE FROM product WHERE product_id=:product_id;", Map.of("product_id", id)) == 1;
+        return parameterJdbcTemplate.update(
+                "DELETE FROM product WHERE product_id=:product_id;", Map.of("product_id", id)) == 1;
     }
 
 //    @Override
@@ -141,21 +137,18 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     private SqlParameterSource[] getParameterSourcesForProductIngredients(Product product, UUID productId) {
 
-        Map<UUID, Float> ingredientIdAmount =
-                product.ingredientAmount().entrySet()
-                        .stream()
-                        .map(entry -> new AbstractMap.SimpleEntry<>(entry.getKey().ingredientId(), entry.getValue()))
-                        .collect(Collectors.toMap(
-                                Map.Entry::getKey,
-                                Map.Entry::getValue
-                        ));
+        Map<UUID, Float> ingredientIdAmount = product.ingredientAmount().entrySet().stream()
+                .map(entry -> new AbstractMap.SimpleEntry<>(
+                        entry.getKey().ingredientId(), entry.getValue()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         var parameterSources = new SqlParameterSource[ingredientIdAmount.size()];
         var ingredientIds = ingredientIdAmount.keySet().toArray(new UUID[0]);
         for (int i = 0; i < parameterSources.length; i++) {
-            parameterSources[i] = new MapSqlParameterSource()
-                    .addValue("product_id", productId)
+            parameterSources[i] = new MapSqlParameterSource().addValue("product_id", productId)
                     .addValue("ingredient_id", ingredientIds[i])
-                    .addValue("amount", ingredientIdAmount.get(ingredientIds[i]));
+                    .addValue("amount",
+                            ingredientIdAmount.get(ingredientIds[i])
+                    );
         }
         return parameterSources;
     }

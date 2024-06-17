@@ -20,7 +20,9 @@ public class ProductServiceImpl implements ProductService {
     private final IngredientRepository ingredientRepository;
     private final ProductMapper mapper;
 
-    public ProductServiceImpl(ProductRepository productRepository, IngredientRepository ingredientRepository, ProductMapper mapper) {
+    public ProductServiceImpl(
+            ProductRepository productRepository, IngredientRepository ingredientRepository, ProductMapper mapper
+    ) {
         this.productRepository = productRepository;
         this.ingredientRepository = ingredientRepository;
         this.mapper = mapper;
@@ -33,7 +35,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto getProduct(UUID id) {
-        return productRepository.get(id).map(mapper::toDto).orElseThrow(() -> new ResourceNotFoundException("Cannot find product with id: " + id.toString()));
+        return productRepository.get(id).map(mapper::toDto).orElseThrow(
+                () -> new ResourceNotFoundException("Cannot find product with id: " + id.toString()));
     }
 
     @Override
@@ -41,7 +44,8 @@ public class ProductServiceImpl implements ProductService {
         var product = mapper.toModel(productDto);
 
         ingredients.forEach((id, amount) -> {
-            var ingredient = ingredientRepository.get(id).orElseThrow(() -> new ResourceNotFoundException("Cannot find ingredient with id: " + id.toString()));
+            var ingredient = ingredientRepository.get(id).orElseThrow(
+                    () -> new ResourceNotFoundException("Cannot find ingredient with id: " + id.toString()));
             product.ingredientAmount().put(ingredient, amount);
         });
         var productId = productRepository.create(product);
@@ -63,14 +67,12 @@ public class ProductServiceImpl implements ProductService {
     public List<ProductDto> getByStore(UUID id) {
         var products = productRepository.getAll(new Page(1000, 0));
         var storeIngredients = ingredientRepository.getByStore(id);
-        return products.stream()
-                .filter(product -> {
-                    var productIngredients = product.ingredientAmount();
-                    return productIngredients.keySet().containsAll(storeIngredients.keySet()) &&
-                            productIngredients.entrySet().stream()
-                                    .allMatch(ingredients -> storeIngredients.get(ingredients.getKey().ingredientId()) >= ingredients.getValue());
-                })
-                .map(mapper::toDto)
-                .toList();
+        return products.stream().filter(product -> {
+            var productIngredients = product.ingredientAmount();
+            return productIngredients.keySet().containsAll(storeIngredients.keySet()) &&
+                    productIngredients.entrySet().stream().allMatch(
+                            ingredients -> storeIngredients.get(ingredients.getKey().ingredientId()) >=
+                                    ingredients.getValue());
+        }).map(mapper::toDto).toList();
     }
 }

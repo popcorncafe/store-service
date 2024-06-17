@@ -25,25 +25,19 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public List<AddressDto> getAddresses(Page page) {
-        return addressRepository.getAll(page).stream()
-                .map(mapper::toDto)
-                .toList();
+        return addressRepository.getAll(page).stream().map(mapper::toDto).toList();
     }
 
     @Override
     public AddressDto getAddress(UUID id) {
-        return addressRepository.get(id).map(mapper::toDto)
-                .orElseThrow(() -> new ResourceNotFoundException("Сould not find an address with id: " + id.toString()));
+        return addressRepository.get(id).map(mapper::toDto).orElseThrow(
+                () -> new ResourceNotFoundException("Сould not find an address with id: " + id.toString()));
     }
 
     @Override
     public AddressDto createAddress(AddressDto addressDto) {
         UUID addressId = addressRepository.create(mapper.toModel(addressDto));
-        return new AddressDto(
-                addressId,
-                addressDto.city(),
-                addressDto.street(),
-                addressDto.homeNumber(),
+        return new AddressDto(addressId, addressDto.city(), addressDto.street(), addressDto.homeNumber(),
                 addressDto.homeLetter()
         );
     }

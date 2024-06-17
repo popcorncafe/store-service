@@ -9,14 +9,11 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class ProductMapper implements RowMapper<Product> {
+
     @Override
     public Product mapRow(ResultSet rs, int rowNum) throws SQLException {
-        return new Product(
-                rs.getObject("product_id", UUID.class),
-                rs.getString("name"),
-                rs.getString("description"),
-                Product.Size.valueOf(rs.getString("size")),
-                new HashMap<>()
+        return new Product(rs.getObject("product_id", UUID.class), rs.getString("name"), rs.getString("description"),
+                Product.Size.valueOf(rs.getString("size")), new HashMap<>()
         );
     }
 }

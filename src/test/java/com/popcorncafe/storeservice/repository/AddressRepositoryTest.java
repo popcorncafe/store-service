@@ -35,8 +35,7 @@ class AddressRepositoryTest {
 
     @Container
     @ServiceConnection
-    static GenericContainer<?> redisContainer = new GenericContainer<>("redis:7.2.4-alpine3.19")
-            .withExposedPorts(6379);
+    static GenericContainer<?> redisContainer = new GenericContainer<>("redis:7.2.4-alpine3.19").withExposedPorts(6379);
 
     private final List<Address> addresses = new ArrayList<>();
     private final Random rn = new Random();
@@ -58,68 +57,47 @@ class AddressRepositoryTest {
         }
 
         var sql = """
-                INSERT INTO address (city_name, street_name, home_number, home_letter)
-                VALUES (:city_name, :street_name, :home_number, :home_letter)
-                RETURNING address_id;
-                """;
+            INSERT INTO address (city_name, street_name, home_number, home_letter)
+            VALUES (:city_name, :street_name, :home_number, :home_letter)
+            RETURNING address_id;
+            """;
 
         testAddresses.forEach(testAddress -> {
-                    var params = Map.of(
-                            "city_name", testAddress.city(),
-                            "street_name", testAddress.street(),
-                            "home_number", testAddress.homeNumber(),
-                            "home_letter", testAddress.homeLetter()
-                    );
+          var params = Map.of("city_name", testAddress.city(), "street_name", testAddress.street(), "home_number",
+              testAddress.homeNumber(), "home_letter", testAddress.homeLetter()
+          );
 
-                    UUID addressId = parameterJdbcTemplate.queryForObject(sql, params, UUID.class);
+          UUID addressId = parameterJdbcTemplate.queryForObject(sql, params, UUID.class);
 
-                    addresses.add(
-                            new Address(
-                                    addressId,
-                                    testAddress.city(),
-                                    testAddress.street(),
-                                    testAddress.homeNumber(),
-                                    testAddress.homeLetter()
-                            )
-                    );
-                }
-        );
+          addresses.add(new Address(addressId, testAddress.city(), testAddress.street(), testAddress.homeNumber(),
+              testAddress.homeLetter()
+          ));
+        });
 
         Address testAddress = createFakeAddress();
 
-        var params = Map.of(
-                "city_name", testAddress.city(),
-                "street_name", testAddress.street(),
-                "home_number", testAddress.homeNumber(),
-                "home_letter", testAddress.homeLetter()
+      var params = Map.of("city_name", testAddress.city(), "street_name", testAddress.street(), "home_number",
+          testAddress.homeNumber(), "home_letter", testAddress.homeLetter()
         );
 
         UUID addressId = parameterJdbcTemplate.queryForObject(sql, params, UUID.class);
 
-        address = new Address(
-                addressId,
-                testAddress.city(),
-                testAddress.street(),
-                testAddress.homeNumber(),
-                testAddress.homeLetter()
+      address = new Address(addressId, testAddress.city(), testAddress.street(), testAddress.homeNumber(),
+          testAddress.homeLetter()
         );
     }
 
     @AfterEach
     void tearDown() {
         parameterJdbcTemplate.update("""
-                DELETE FROM store;
-                DELETE FROM address;
-                """, new MapSqlParameterSource());
+            DELETE FROM store;
+            DELETE FROM address;
+            """, new MapSqlParameterSource());
     }
 
     private Address createFakeAddress() {
-        return new Address(
-                null,
-                "city #" + rn.nextInt(1000),
-                "street #" + rn.nextInt(1000),
-                rn.nextInt(200),
-                String.valueOf(rn.nextInt(26) + 'A')
+      return new Address(null, "city #" + rn.nextInt(1000), "street #" + rn.nextInt(1000), rn.nextInt(200),
+          String.valueOf(rn.nextInt(26) + 'A')
         );
     }
 
@@ -176,13 +154,7 @@ class AddressRepositoryTest {
 
         UUID addressId = addressRepository.create(testAddress);
 
-        Address updatedAddress = new Address(
-                addressId,
-                "updated city",
-                "updated street",
-                123,
-                "A"
-        );
+      Address updatedAddress = new Address(addressId, "updated city", "updated street", 123, "A");
 
         boolean isUpdated = addressRepository.update(updatedAddress);
 
@@ -225,41 +197,31 @@ class AddressRepositoryTest {
     @Test
     void AddressRepository_GetByStoreId_ReturnsOptionalAddress() {
 
-        var testAddress = new Address(
-                null,
-                "city #" + rn.nextInt(1000),
-                "street #" + rn.nextInt(1000),
-                rn.nextInt(200),
-                String.valueOf(rn.nextInt(26) + 'A')
+      var testAddress = new Address(null, "city #" + rn.nextInt(1000), "street #" + rn.nextInt(1000), rn.nextInt(200),
+          String.valueOf(rn.nextInt(26) + 'A')
         );
 
-        var testStore = new Store(
-                null,
-                testAddress,
-                new Store.Location(
-                        -180 + rn.nextFloat() * 360,
-                        -90 + rn.nextFloat() * 180
-                )
+      var testStore = new Store(null, testAddress,
+          new Store.Location(-180 + rn.nextFloat() * 360, -90 + rn.nextFloat() * 180)
         );
 
         var sql = """
-                WITH new_address AS (
-                    INSERT INTO address (city_name, street_name, home_number, home_letter)
-                    VALUES (:city_name, :street_name, :home_number, :home_letter)
-                    RETURNING address_id
-                )
-                INSERT INTO store(address_id, location)
-                VALUES ((SELECT address_id FROM new_address), point(:longitude, :latitude))
-                RETURNING store_id;
-                """;
+            WITH new_address AS (
+                INSERT INTO address (city_name, street_name, home_number, home_letter)
+                VALUES (:city_name, :street_name, :home_number, :home_letter)
+                RETURNING address_id
+            )
+            INSERT INTO store(address_id, location)
+            VALUES ((SELECT address_id FROM new_address), point(:longitude, :latitude))
+            RETURNING store_id;
+            """;
 
-        var params = new MapSqlParameterSource()
-                .addValue("city_name", testStore.address().city())
-                .addValue("street_name", testStore.address().street())
-                .addValue("home_number", testStore.address().homeNumber())
-                .addValue("home_letter", testStore.address().homeLetter())
-                .addValue("longitude", testStore.location().longitude())
-                .addValue("latitude", testStore.location().latitude());
+      var params = new MapSqlParameterSource().addValue("city_name", testStore.address().city())
+          .addValue("street_name", testStore.address().street())
+          .addValue("home_number", testStore.address().homeNumber())
+          .addValue("home_letter", testStore.address().homeLetter())
+          .addValue("longitude", testStore.location().longitude())
+          .addValue("latitude", testStore.location().latitude());
 
         UUID storeId = parameterJdbcTemplate.queryForObject(sql, params, UUID.class);
 

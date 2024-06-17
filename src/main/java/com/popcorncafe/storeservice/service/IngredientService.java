@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public interface IngredientService {
+
     List<IngredientDto> getIngredients(Page page);
 
     IngredientDto getIngredient(UUID id);

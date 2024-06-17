@@ -41,7 +41,8 @@ public class CartRepositoryImpl implements CartRepository {
                 LIMIT :page_size
                 OFFSET :page_offset;
                 """;
-        var params = new MapSqlParameterSource().addValue("page_size", page.size()).addValue("page_offset", page.offset());
+        var params = new MapSqlParameterSource().addValue("page_size", page.size())
+                .addValue("page_offset", page.offset());
         return parameterJdbcTemplate.query(sql, params, new CartMapper());
     }
 
@@ -53,8 +54,7 @@ public class CartRepositoryImpl implements CartRepository {
                 RETURNING cart_id;
                 """;
 
-        var params = new MapSqlParameterSource()
-                .addValue("client_id", cart.clientId())
+        var params = new MapSqlParameterSource().addValue("client_id", cart.clientId())
                 .addValue("storeId", cart.storeId())
                 .addValue("order_price", cart.orderPrice())
                 .addValue("status", cart.status().name());
@@ -70,8 +70,7 @@ public class CartRepositoryImpl implements CartRepository {
                 WHERE cart_id=:cart_id
                 """;
 
-        var params = new MapSqlParameterSource()
-                .addValue("storeId", cart.storeId())
+        var params = new MapSqlParameterSource().addValue("cart_id", cart.cartId())
                 .addValue("status", cart.status().name());
 
         return parameterJdbcTemplate.update(sql, params) == 1;
@@ -79,38 +78,31 @@ public class CartRepositoryImpl implements CartRepository {
 
     @Override
     public boolean delete(UUID id) {
-        return parameterJdbcTemplate.update(
-                "DELETE FROM cart WHERE cart_id=:cart_id;",
-                Map.of("cart_id", id)) == 1;
+        return parameterJdbcTemplate.update("DELETE FROM cart WHERE cart_id=:cart_id;", Map.of("cart_id", id)) == 1;
     }
 
     @Override
     public List<Cart> getByClient(long id) {
-        return parameterJdbcTemplate.query(
-                """
-                        SELECT cart_id, client_id, store_id, order_date, order_price, status
-                        FROM cart
-                        WHERE client_id=:client_id
-                        LIMIT 50;
-                        """,
-                Map.of("client_id", id),
-                new CartMapper());
+        return parameterJdbcTemplate.query("""
+                SELECT cart_id, client_id, store_id, order_date, order_price, status
+                FROM cart
+                WHERE client_id=:client_id
+                LIMIT 50;
+                """, Map.of("client_id", id), new CartMapper());
     }
 
     @Override
     public List<Cart> getByStore(UUID id, Page page) {
-        return parameterJdbcTemplate.query(
-                """
+        return parameterJdbcTemplate.query("""
                         SELECT cart_id, client_id, store_id, order_date, order_price, status
                         FROM cart
                         WHERE store_id=:store_id
                         LIMIT :page_size
                         OFFSET :page_offset;
-                        """,
-                new MapSqlParameterSource()
-                        .addValue("store_id", id)
+                        """, new MapSqlParameterSource().addValue("store_id", id)
                         .addValue("page_size", page.size())
                         .addValue("page_offset", page.offset()),
-                new CartMapper());
+                new CartMapper()
+        );
     }
 }

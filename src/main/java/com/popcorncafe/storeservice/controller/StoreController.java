@@ -48,7 +48,9 @@ public class StoreController {
     }
 
     @GetMapping("/location/{longitude}/{latitude}")
-    ResponseEntity<List<StoreDto>> getStoreByLocation(@PathVariable("longitude") float longitude, @PathVariable("latitude") float latitude) {
+    ResponseEntity<List<StoreDto>> getStoreByLocation(
+            @PathVariable("longitude") float longitude, @PathVariable("latitude") float latitude
+    ) {
         return ResponseEntity.ok(storeService.getStoresByLocation(new Store.Location(longitude, latitude)));
     }
 
@@ -60,7 +62,6 @@ public class StoreController {
 //    public ResponseEntity<Boolean> updateStorage(@RequestBody Storage storage) {
 //        return storeService.updateStorage(storage);
 //    }
-
 
     //    @GetMapping("/{id}/products")
 //    ResponseEntity<List<Product>> getProductsByStoreId(@PathVariable("id") UUID id) {

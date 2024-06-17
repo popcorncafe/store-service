@@ -39,13 +39,17 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public CartDto getCart(UUID id) {
-        return cartRepository.get(id).map(mapper::toDto).orElseThrow(() -> new ResourceNotFoundException("Cannot find cart with id: " + id.toString()));
+        return cartRepository.get(id).map(mapper::toDto).orElseThrow(
+                () -> new ResourceNotFoundException("Cannot find cart with id: " + id.toString()));
     }
 
     @Override
     public CartDto createCart(CartDto cartDto) {
         var cartId = cartRepository.create(mapper.toModel(cartDto));
-        return new CartDto(cartId, cartDto.clientId(), cartDto.storeId(), cartDto.orderDate(), cartDto.orderPrice(), cartDto.status(), cartDto.products());
+        return new CartDto(
+                cartId, cartDto.clientId(), cartDto.storeId(), cartDto.orderDate(), cartDto.orderPrice(),
+                cartDto.status(), cartDto.products()
+        );
     }
 
     @Override

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface CartRepository extends AbstractRepository<Cart> {
+
     List<Cart> getByClient(long id);
 
     List<Cart> getByStore(UUID id, Page page);

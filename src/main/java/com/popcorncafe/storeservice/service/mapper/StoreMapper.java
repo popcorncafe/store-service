@@ -15,19 +15,11 @@ public class StoreMapper implements Mapper<Store, StoreDto> {
 
     @Override
     public Store toModel(StoreDto dto) {
-        return new Store(
-                dto.id(),
-                addressMapper.toModel(dto.address()),
-                dto.location()
-        );
+        return new Store(dto.id(), addressMapper.toModel(dto.address()), dto.location());
     }
 
     @Override
     public StoreDto toDto(Store model) {
-        return new StoreDto(
-                model.storeId(),
-                addressMapper.toDto(model.address()),
-                model.location()
-        );
+        return new StoreDto(model.storeId(), addressMapper.toDto(model.address()), model.location());
     }
 }

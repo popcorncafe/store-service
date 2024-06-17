@@ -25,25 +25,19 @@ public class IngredientServiceImpl implements IngredientService {
 
     @Override
     public List<IngredientDto> getIngredients(Page page) {
-        return ingredientRepository.getAll(page).stream()
-                .map(mapper::toDto)
-                .toList();
+        return ingredientRepository.getAll(page).stream().map(mapper::toDto).toList();
     }
 
     @Override
     public IngredientDto getIngredient(UUID id) {
-        return ingredientRepository.get(id)
-                .map(mapper::toDto)
+        return ingredientRepository.get(id).map(mapper::toDto)
                 .orElseThrow(() -> new RuntimeException("Ingredient not found"));
     }
 
     @Override
     public IngredientDto createIngredient(IngredientDto ingredientDto) {
         var ingredientId = ingredientRepository.create(mapper.toModel(ingredientDto));
-        return new IngredientDto(
-                ingredientId,
-                ingredientDto.name(),
-                ingredientDto.unitPrice(),
+        return new IngredientDto(ingredientId, ingredientDto.name(), ingredientDto.unitPrice(),
                 ingredientDto.measure()
         );
     }
