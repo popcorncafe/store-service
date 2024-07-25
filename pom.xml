@@ -2,9 +2,22 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <artifactId>store-service</artifactId>
 
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <groupId>org.springframework.boot</groupId>
+        <relativePath/>
+        <version>3.3.2</version>
+    </parent>
+
+    <groupId>com.popcorncafe</groupId>
+    <artifactId>store-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+
+    <name>Store service</name>
+    <description>Service for performing tasks related to the store</description>
 
     <properties>
         <jacoco.maven.plugin.version>0.8.12</jacoco.maven.plugin.version>
@@ -93,17 +106,6 @@
             <groupId>org.springframework.boot</groupId>
         </dependency>
     </dependencies>
-    <description>Service for performing tasks related to the store</description>
-    <groupId>com.popcorncafe</groupId>
-    <modelVersion>4.0.0</modelVersion>
-    <name>Store service</name>
-
-    <parent>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <groupId>org.springframework.boot</groupId>
-        <relativePath/>
-        <version>3.3.2</version>
-    </parent>
 
     <build>
         <plugins>
