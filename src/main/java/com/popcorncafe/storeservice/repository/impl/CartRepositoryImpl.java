@@ -30,7 +30,9 @@ public class CartRepositoryImpl implements CartRepository {
                 WHERE cart_id=:cart_id
                 LIMIT 1;
                 """;
-        return parameterJdbcTemplate.query(sql, Map.of("cart_id", id), new CartMapper()).stream().findFirst();
+        return parameterJdbcTemplate.query(sql, Map.of("cart_id", id), new CartMapper())
+                                    .stream()
+                                    .findFirst();
     }
 
     @Override
@@ -55,7 +57,7 @@ public class CartRepositoryImpl implements CartRepository {
                 """;
 
         var params = new MapSqlParameterSource().addValue("client_id", cart.clientId())
-                .addValue("storeId", cart.storeId())
+                                                .addValue("store_id", cart.storeId())
                 .addValue("order_price", cart.orderPrice())
                 .addValue("status", cart.status().name());
 
@@ -78,7 +80,10 @@ public class CartRepositoryImpl implements CartRepository {
 
     @Override
     public boolean delete(UUID id) {
-        return parameterJdbcTemplate.update("DELETE FROM cart WHERE cart_id=:cart_id;", Map.of("cart_id", id)) == 1;
+        return parameterJdbcTemplate.update(
+                "DELETE FROM cart WHERE cart_id=:cart_id;",
+                Map.of("cart_id", id)
+        ) == 1;
     }
 
     @Override
