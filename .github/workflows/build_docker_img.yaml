@@ -34,7 +34,7 @@ jobs:
         run: rm -rf docker-build/extracted-jar/snapshot-dependencies
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4.3.4
+        uses: actions/upload-artifact@v4.3.5
         with:
           name: docker_build_path
           path: ./docker-build
